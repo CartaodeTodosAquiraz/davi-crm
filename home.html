@@ -185,45 +185,60 @@
       </div>
     </div>
   </main>
-   <script type="module">
-    // Import Firebase SDK
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+<!-- SCRIPT 1: Toggle Sidebar e Submenu -->
+<script>
+  function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    sidebar.classList.toggle('close');
+  }
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyASoR9O0ZEyb0OaznSm-7f8KezBw4HxAP8",
-      authDomain: "crm-davi.firebaseapp.com",
-      projectId: "crm-davi",
-      storageBucket: "crm-davi.firebasestorage.app",
-      messagingSenderId: "475034855713",
-      appId: "1:475034855713:web:5002ad57b4e4b7547db660"
-    };
+  function toggleSubMenu(element) {
+    const subMenu = element.nextElementSibling;
+    subMenu.classList.toggle('show');
+    element.classList.toggle('rotate');
+  }
+</script>
 
-    const app = initializeApp(firebaseConfig);
-    const database = getDatabase(app);
+<!-- SCRIPT 2: Firebase e leitura em tempo real -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-    const meta = 20;
+  const firebaseConfig = {
+    apiKey: "AIzaSyASoR9O0ZEyb0OaznSm-7f8KezBw4HxAP8",
+    authDomain: "crm-davi.firebaseapp.com",
+    projectId: "crm-davi",
+    storageBucket: "crm-davi.firebasestorage.app",
+    messagingSenderId: "475034855713",
+    appId: "1:475034855713:web:5002ad57b4e4b7547db660"
+  };
 
-    onValue(ref(database, 'home'), (snapshot) => {
-      const dados = snapshot.val();
-      if (!dados) return;
+  const app = initializeApp(firebaseConfig);
+  const database = getDatabase(app);
 
-      const falta = Math.max(0, meta - (dados.vendasTotais || 0));
+  const meta = 20;
 
-      document.getElementById("ligacoes-hoje").textContent = dados.ligacoesHoje || 0;
-      document.getElementById("ligacoes-ontem").textContent = dados.ligacoesOntem || 0;
-      document.getElementById("leads-indicacao").textContent = dados.leadsIndicacao || 0;
-      document.getElementById("leads-trafego").textContent = dados.leadsTrafego || 0;
-      document.getElementById("vendas-totais").textContent = dados.vendasTotais || 0;
-      document.getElementById("vendas-hoje").textContent = dados.vendasHoje || 0;
-      document.getElementById("vendas-ontem").textContent = dados.vendasOntem || 0;
-      document.getElementById("leads-consulta").textContent = dados.leadsConsulta || 0;
-      document.getElementById("pendencias").textContent = dados.pendencias || 0;
-      document.getElementById("tarefas").textContent = dados.tarefas || 0;
-      document.getElementById("aguardando-retorno").textContent = dados.aguardandoRetorno || 0;
-      document.getElementById("projecoes").textContent = dados.projecoes || 0;
-      document.getElementById("falta-meta").textContent = falta;
-    });
-  </script>
+  onValue(ref(database, 'home'), (snapshot) => {
+    const dados = snapshot.val();
+    if (!dados) return;
+
+    const falta = Math.max(0, meta - (dados.vendasTotais || 0));
+
+    document.getElementById("ligacoes-hoje").textContent = dados.ligacoesHoje || 0;
+    document.getElementById("ligacoes-ontem").textContent = dados.ligacoesOntem || 0;
+    document.getElementById("leads-indicacao").textContent = dados.leadsIndicacao || 0;
+    document.getElementById("leads-trafego").textContent = dados.leadsTrafego || 0;
+    document.getElementById("vendas-totais").textContent = dados.vendasTotais || 0;
+    document.getElementById("vendas-hoje").textContent = dados.vendasHoje || 0;
+    document.getElementById("vendas-ontem").textContent = dados.vendasOntem || 0;
+    document.getElementById("leads-consulta").textContent = dados.leadsConsulta || 0;
+    document.getElementById("pendencias").textContent = dados.pendencias || 0;
+    document.getElementById("tarefas").textContent = dados.tarefas || 0;
+    document.getElementById("aguardando-retorno").textContent = dados.aguardandoRetorno || 0;
+    document.getElementById("projecoes").textContent = dados.projecoes || 0;
+    document.getElementById("falta-meta").textContent = falta;
+  });
+</script>
+
 </body>
 </html>
