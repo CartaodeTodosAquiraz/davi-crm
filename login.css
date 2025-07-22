@@ -1,0 +1,97 @@
+:root {
+  --base-clr: #11121a;
+  --line-clr: #42434a;
+  --hover-clr: #222533;
+  --text-clr: #e6e6ef;
+  --accent-clr: #5e63ff;
+  --secondary-text-clr: #b0b3c1;
+  --success-clr: #43cc25;
+}
+
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: Arial, sans-serif;
+  background-color: var(--base-clr);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-container {
+  background: var(--hover-clr);
+  padding: 40px;
+  border-radius: 15px;
+  box-shadow: 0 0 20px rgba(67, 204, 37, 0.2);
+  transition: all 0.3s ease-in-out;
+  width: 100%;
+  max-width: 380px;
+  margin: 20px;
+}
+
+.login-box h2 {
+  color: var(--text-clr);
+  text-align: center;
+  margin-bottom: 25px;
+  font-size: 24px;
+}
+
+.login-box input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: none;
+  border-radius: 8px;
+  background-color: var(--line-clr);
+  color: var(--text-clr);
+  font-size: 16px;
+  outline: none;
+}
+
+.login-box input::placeholder {
+  color: var(--secondary-text-clr);
+}
+
+.login-box button {
+  width: 100%;
+  padding: 12px;
+  background-color: var(--success-clr);
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.login-box button:hover {
+  box-shadow: 0 0 12px 2px var(--success-clr);
+  transform: scale(1.02);
+}
+
+#login-status {
+  color: var(--text-clr);
+  text-align: center;
+  margin-top: 15px;
+  font-weight: bold;
+}
+
+/* Responsividade */
+@media (max-width: 480px) {
+  .login-container {
+    padding: 25px;
+    border-radius: 10px;
+  }
+
+  .login-box h2 {
+    font-size: 20px;
+  }
+
+  .login-box input,
+  .login-box button {
+    font-size: 16px;
+    padding: 10px;
+  }
+}
