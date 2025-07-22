@@ -52,9 +52,6 @@
           <div>
             <li><a href="#">Work</a></li>
             <li><a href="#">Private</a></li>
-            <li><a href="#">Coding</a></li>
-            <li><a href="#">Gardening</a></li>
-            <li><a href="#">School</a></li>
           </div>
         </ul>
       </li>
@@ -76,7 +73,7 @@
 <section class="container">
   <h2>Leads do Tráfego Pago</h2>
   <div class="table-wrapper">
-    <table id="trafegoTable">
+    <table id="tabela-trafego">
       <thead>
         <tr>
           <th>Nome</th>
@@ -97,51 +94,58 @@
 </main>
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyASoR9O0ZEyb0OaznSm-7f8KezBw4HxAP8",
     authDomain: "crm-davi.firebaseapp.com",
     projectId: "crm-davi",
-    storageBucket: "crm-davi.firebasestorage.app",
+    storageBucket: "crm-davi.firebaseapp.com",
     messagingSenderId: "475034855713",
     appId: "1:475034855713:web:5002ad57b4e4b7547db660"
   };
 
   const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
-  const leadsRef = ref(db, 'leadsTrafego');
+  const database = getDatabase(app);
 
-  const tableBody = document.querySelector("#trafegoTable tbody");
+  const tbody = document.querySelector("#tabela-trafego tbody");
 
-  onValue(leadsRef, (snapshot) => {
-    tableBody.innerHTML = '';
-    snapshot.forEach((childSnapshot) => {
-      const lead = childSnapshot.val();
-      const row = document.createElement("tr");
-      if (lead.vendaFechada?.toLowerCase() === 'sim') row.style.backgroundColor = "#134c13";
+  onValue(ref(database, "trafego"), (snapshot) => {
+    tbody.innerHTML = "";
+    const dados = snapshot.val();
+    if (!dados) return;
 
-      row.innerHTML = `
-        <td>${lead.nome}</td>
-        <td>${lead.telefone}</td>
-        <td>${lead.dataRecebimento}</td>
-        <td>${lead.tratativa || ''}</td>
-        <td>${lead.dataRetorno || ''}</td>
-        <td>${lead.vendaFechada || 'Não'}</td>
+    Object.entries(dados).forEach(([key, item]) => {
+      const tr = document.createElement("tr");
+
+      // Se estiver marcado como venda fechada, aplicar classe verde
+      const fechado = item.venda === "sim" || item.venda === "true";
+      const rowClass = fechado ? "style='background-color: #2e7d32; color: white'" : "";
+
+      tr.innerHTML = `
+        <td ${rowClass}>${item.nome || ""}</td>
+        <td ${rowClass}>${item.telefone || ""}</td>
+        <td ${rowClass}>${item.data || ""}</td>
+        <td ${rowClass}>${item.tratativa || "-"}</td>
+        <td ${rowClass}>${item.dataRetorno || "-"}</td>
+        <td ${rowClass}>${item.venda || "não"}</td>
         <td>
-          <a href="https://wa.me/55${lead.telefone.replace(/\D/g, '')}" target="_blank">Whatsapp</a> |
-          <button onclick="editarLead('${childSnapshot.key}')">Editar</button>
+          <a href="https://wa.me/55${item.telefone}" target="_blank">📲</a>
+          <button onclick="editarLead('${key}')">✏️</button>
         </td>
       `;
-      tableBody.appendChild(row);
+
+      tbody.appendChild(tr);
     });
   });
 
-  window.editarLead = function(key) {
-    alert("Função de edição em construção para o lead: " + key);
-  }
+  // Exemplo básico de edição (pode ser expandido depois)
+  window.editarLead = (id) => {
+    alert("Função de edição em construção para o lead: " + id);
+  };
 </script>
+
 
 <style>
 
