@@ -9,7 +9,7 @@ function login() {
     document.querySelector(".login-container").style.boxShadow = "0 0 25px #43cc25";
 
     setTimeout(() => {
-      window.location.href = "index.html";
+      window.location.href = "home.html";
     }, 2000);
   } else {
     status.textContent = "Usuário ou senha incorretos!";
