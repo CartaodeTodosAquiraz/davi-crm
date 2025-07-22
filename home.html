@@ -185,39 +185,30 @@
       </div>
     </div>
   </main>
-<!-- SCRIPT 1: Toggle Sidebar e Submenu -->
-<script>
-  function toggleSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    sidebar.classList.toggle('close');
-  }
-
-  function toggleSubMenu(element) {
-    const subMenu = element.nextElementSibling;
-    subMenu.classList.toggle('show');
-    element.classList.toggle('rotate');
-  }
-</script>
-
 <!-- SCRIPT 2: Firebase e leitura em tempo real -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  import {
+    getDatabase,
+    ref,
+    onValue,
+    update
+  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyASoR9O0ZEyb0OaznSm-7f8KezBw4HxAP8",
     authDomain: "crm-davi.firebaseapp.com",
     projectId: "crm-davi",
-    storageBucket: "crm-davi.firebasestorage.app",
+    storageBucket: "crm-davi.firebaseapp.com",
     messagingSenderId: "475034855713",
     appId: "1:475034855713:web:5002ad57b4e4b7547db660"
   };
 
   const app = initializeApp(firebaseConfig);
   const database = getDatabase(app);
-
   const meta = 20;
 
+  // Atualizações de contadores do painel HOME
   onValue(ref(database, 'home'), (snapshot) => {
     const dados = snapshot.val();
     if (!dados) return;
@@ -238,7 +229,25 @@
     document.getElementById("projecoes").textContent = dados.projecoes || 0;
     document.getElementById("falta-meta").textContent = falta;
   });
+
+  // Contador dinâmico de ligações
+  onValue(ref(database, 'ligacoes'), (snapshot) => {
+    let total = 0;
+    snapshot.forEach(() => total++);
+    const el = document.getElementById("ligacoes-hoje");
+    if (el) el.textContent = total;
+  });
+
+  // Contador dinâmico de leads de tráfego
+  onValue(ref(database, 'trafego'), (snapshot) => {
+    let total = 0;
+    snapshot.forEach(() => total++);
+    const el = document.getElementById("leads-trafego");
+    if (el) el.textContent = total;
+  });
+
 </script>
+
 
 </body>
 </html>

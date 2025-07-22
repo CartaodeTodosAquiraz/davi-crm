@@ -140,10 +140,50 @@
     });
   });
 
-  // Exemplo básico de edição (pode ser expandido depois)
-  window.editarLead = (id) => {
-    alert("Função de edição em construção para o lead: " + id);
+function editarLead(id, lead) {
+  const row = document.querySelector(`[data-id='${id}']`);
+
+  if (!row) return;
+
+  row.innerHTML = `
+    <td><input type="text" value="${lead.nome}" /></td>
+    <td><input type="text" value="${lead.telefone}" /></td>
+    <td>${lead.data}</td>
+    <td><input type="text" value="${lead.tratativa || ''}" /></td>
+    <td><input type="date" value="${lead.dataRetorno || ''}" /></td>
+    <td>
+      <select>
+        <option value="">Não</option>
+        <option value="sim" ${lead.venda === 'sim' ? 'selected' : ''}>Sim</option>
+      </select>
+    </td>
+    <td colspan="2">
+      <button onclick="salvarEdicao('${id}', this)">Salvar</button>
+    </td>
+  `;
+}
+function salvarEdicao(id, btn) {
+  const row = btn.parentElement.parentElement;
+  const inputs = row.querySelectorAll("input, select");
+
+  const novoLead = {
+    nome: inputs[0].value,
+    telefone: inputs[1].value,
+    data: row.cells[2].innerText,
+    tratativa: inputs[2].value,
+    dataRetorno: inputs[3].value,
+    venda: inputs[4].value
   };
+
+  // Atualizar no Firebase
+  update(ref(database, 'trafego/' + id), novoLead).then(() => {
+    alert("Lead atualizado com sucesso!");
+    location.reload(); // recarrega para mostrar atualizações
+  }).catch(error => {
+    console.error("Erro ao atualizar:", error);
+  });
+}
+
 </script>
 
 
