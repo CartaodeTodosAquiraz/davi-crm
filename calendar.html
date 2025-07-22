@@ -139,51 +139,102 @@
       border-radius: 4px;
     }
   </style>
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyASoR9O0ZEyb0OaznSm-7f8KezBw4HxAP8",
-      authDomain: "crm-davi.firebaseapp.com",
-      projectId: "crm-davi",
-      storageBucket: "crm-davi.firebasestorage.app",
-      messagingSenderId: "475034855713",
-      appId: "1:475034855713:web:5002ad57b4e4b7547db660"
+  const firebaseConfig = {
+    apiKey: "AIzaSyASoR9O0ZEyb0OaznSm-7f8KezBw4HxAP8",
+    authDomain: "crm-davi.firebaseapp.com",
+    projectId: "crm-davi",
+    storageBucket: "crm-davi.firebasestorage.app",
+    messagingSenderId: "475034855713",
+    appId: "1:475034855713:web:5002ad57b4e4b7547db660"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  const leadsRef = ref(db, 'leadsIndicacao');
+
+  const tableBody = document.querySelector("#indicacoesTable tbody");
+
+  onValue(leadsRef, (snapshot) => {
+    tableBody.innerHTML = '';
+    snapshot.forEach((childSnapshot) => {
+      const lead = childSnapshot.val();
+      const row = document.createElement("tr");
+
+      if (lead.vendaFechada?.toLowerCase() === 'sim') {
+        row.style.backgroundColor = "#134c13"; // destaque verde para venda fechada
+      }
+
+      row.innerHTML = `
+        <td>${lead.nome}</td>
+        <td>${lead.telefone}</td>
+        <td>${lead.dataRecebimento}</td>
+        <td>${lead.tratativa || ''}</td>
+        <td>${lead.dataRetorno || ''}</td>
+        <td>${lead.vendaFechada || 'Não'}</td>
+        <td>
+          <a href="https://wa.me/55${lead.telefone.replace(/\D/g, '')}" target="_blank">Whatsapp</a> |
+          <button onclick="editarLead('${childSnapshot.key}')">Editar</button>
+        </td>
+      `;
+      tableBody.appendChild(row);
+    });
+  });
+
+  window.editarLead = function(key) {
+    const row = document.querySelector(`button[onclick="editarLead('${key}')"]`).closest("tr");
+    const cells = row.querySelectorAll("td");
+
+    const nome = cells[0].textContent;
+    const telefone = cells[1].textContent;
+    const dataRecebimento = cells[2].textContent;
+    const tratativa = cells[3].textContent || '';
+    const dataRetorno = cells[4].textContent || '';
+    const vendaFechada = cells[5].textContent;
+
+    row.innerHTML = `
+      <td><input type="text" value="${nome}" /></td>
+      <td><input type="text" value="${telefone}" /></td>
+      <td>${dataRecebimento}</td>
+      <td><input type="text" value="${tratativa}" /></td>
+      <td><input type="date" value="${dataRetorno}" /></td>
+      <td>
+        <select>
+          <option value="Não" ${vendaFechada === "Não" ? "selected" : ""}>Não</option>
+          <option value="Sim" ${vendaFechada === "Sim" ? "selected" : ""}>Sim</option>
+        </select>
+      </td>
+      <td><button onclick="salvarEdicaoLead('${key}', this)">Salvar</button></td>
+    `;
+  };
+
+  window.salvarEdicaoLead = function(key, btn) {
+    const row = btn.closest("tr");
+    const inputs = row.querySelectorAll("input, select");
+
+    const novoLead = {
+      nome: inputs[0].value,
+      telefone: inputs[1].value,
+      dataRecebimento: row.cells[2].textContent,
+      tratativa: inputs[2].value,
+      dataRetorno: inputs[3].value,
+      vendaFechada: inputs[4].value
     };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-    const leadsRef = ref(db, 'leadsIndicacao');
-
-    const tableBody = document.querySelector("#indicacoesTable tbody");
-
-    onValue(leadsRef, (snapshot) => {
-      tableBody.innerHTML = '';
-      snapshot.forEach((childSnapshot) => {
-        const lead = childSnapshot.val();
-        const row = document.createElement("tr");
-        if (lead.vendaFechada?.toLowerCase() === 'sim') row.style.backgroundColor = "#134c13";
-
-        row.innerHTML = `
-          <td>${lead.nome}</td>
-          <td>${lead.telefone}</td>
-          <td>${lead.dataRecebimento}</td>
-          <td>${lead.tratativa || ''}</td>
-          <td>${lead.dataRetorno || ''}</td>
-          <td>${lead.vendaFechada || 'Não'}</td>
-          <td>
-            <a href="https://wa.me/55${lead.telefone.replace(/\D/g, '')}" target="_blank">Whatsapp</a> |
-            <button onclick="editarLead('${childSnapshot.key}')">Editar</button>
-          </td>
-        `;
-        tableBody.appendChild(row);
+    update(ref(db, 'indicacoes/' + key), novoLead)
+      .then(() => {
+        alert("Lead atualizado com sucesso!");
+        location.reload(); // recarrega para refletir a alteração
+      })
+      .catch((error) => {
+        alert("Erro ao atualizar lead: " + error.message);
       });
-    });
+  };
+</script>
 
-    window.editarLead = function(key) {
-      alert("Função de edição em construção para o lead: " + key);
-    }
   </script>
 </body>
 </html>
